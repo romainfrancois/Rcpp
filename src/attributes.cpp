@@ -3458,6 +3458,20 @@ BEGIN_RCPP
 END_RCPP
 }
 
+RcppExport SEXP dataAttributes(SEXP sPackageDir,
+    SEXP sPackageName,
+    SEXP sDepends,
+    SEXP sRegistration,
+    SEXP sCppFiles,
+    SEXP sCppFileBasenames,
+    SEXP sIncludes,
+    SEXP sVerbose,
+    SEXP sPlatform) {
+BEGIN_RCPP
+
+END_RCPP
+}
+
 // Compile the attributes within the specified package directory into
 // RcppExports.cpp and RcppExports.R
 RcppExport SEXP compileAttributes(SEXP sPackageDir,

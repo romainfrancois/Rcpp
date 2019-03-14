@@ -389,7 +389,7 @@ areMacrosDefined <- function(names,
 
 # Scan the source files within a package for attributes and generate code
 # based on the attributes.
-compileAttributes <- function(pkgdir = ".", verbose = getOption("verbose")) {
+compileAttributes <- function(pkgdir = ".", verbose = getOption("verbose"), generate = TRUE) {
 
     # verify this is a package and read the DESCRIPTION to get it's name
     pkgdir <- normalizePath(pkgdir, winslash = "/")
@@ -418,11 +418,12 @@ compileAttributes <- function(pkgdir = ".", verbose = getOption("verbose")) {
 
     # create R directory if it doesn't already exist
     rDir <- file.path(pkgdir, "R")
-    if (!file.exists(rDir))
+    if (generate && !file.exists(rDir))
         dir.create(rDir)
 
     # remove the old RcppExports.R file
-    unlink(file.path(rDir, "RcppExports.R"))
+    if (generate)
+        unlink(file.path(rDir, "RcppExports.R"))
 
     # get a list of all source files
     cppFiles <- list.files(srcDir, pattern = "\\.((c(c|pp)?)|(h(pp)?))$", ignore.case = TRUE)
@@ -466,10 +467,13 @@ compileAttributes <- function(pkgdir = ".", verbose = getOption("verbose")) {
     if (length(pkgHeader) > 0)
         includes <- c(paste0("#include \"", pkgHeader ,"\""), includes)
 
-    # generate exports
-    invisible(.Call("compileAttributes", PACKAGE="Rcpp",
-                    pkgdir, pkgname, depends, registration, cppFiles, cppFileBasenames,
-                    includes, verbose, .Platform))
+    # generate exports or retrieve data
+    dot_call_function <- if(generate) "compileAttributes" else "dataAttributes"
+    invisible(.Call(dot_call_function, PACKAGE="Rcpp",
+        pkgdir, pkgname, depends, registration, cppFiles, cppFileBasenames,
+        includes, verbose, .Platform
+    ))
+
 }
 
 # setup plugins environment
